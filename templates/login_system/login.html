@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            border-color: #d8000c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+
+        <form id="loginForm" method="POST" novalidate>
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username or Email" value="{{ request.POST.username }}" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+    </div>
+
+    <!-- ✅ Django messages as window alert -->
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+            alert("{{ message }}");
+        {% endfor %}
+    </script>
+    {% endif %}
+
+    <script>
+        const form = document.getElementById('loginForm');
+
+        form.addEventListener('submit', function(e) {
+            let errors = [];
+
+            const username = form.username.value.trim();
+            const password = form.password.value;
+
+            // Clear previous errors
+            form.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+
+            if (!username) {
+                errors.push("Username or Email is required.");
+                form.username.classList.add('error');
+            }
+
+            if (!password) {
+                errors.push("Password is required.");
+                form.password.classList.add('error');
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert(errors.join("\n"));
+            }
+        });
+    </script>
+</body>
+</html>

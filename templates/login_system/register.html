@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            border-color: #d8000c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+
+        <form id="registerForm" method="POST" novalidate>
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" value="{{ request.POST.username }}" required>
+            <input type="email" name="email" placeholder="Email" value="{{ request.POST.email }}" required>
+            <input type="text" name="phone" placeholder="Phone Number" value="{{ request.POST.phone }}" required>
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+    <!-- ✅ Django messages as alert -->
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+            alert("{{ message }}");
+        {% endfor %}
+    </script>
+    {% endif %}
+
+    <script>
+        const form = document.getElementById('registerForm');
+
+        form.addEventListener('submit', function(e) {
+            let errors = [];
+
+            const username = form.username.value.trim();
+            const email = form.email.value.trim();
+            const phone = form.phone.value.trim();
+            const password1 = form.password1.value;
+            const password2 = form.password2.value;
+
+            // Clear previous errors
+            form.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+
+            // Username validation
+            if (username.length < 3) {
+                errors.push("Username must be at least 3 characters.");
+                form.username.classList.add('error');
+            }
+
+            // Email validation
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                errors.push("Enter a valid email.");
+                form.email.classList.add('error');
+            }
+
+            // Phone validation
+            const phonePattern = /^\d{10,}$/;
+            if (!phonePattern.test(phone)) {
+                errors.push("Phone must be at least 10 digits.");
+                form.phone.classList.add('error');
+            }
+
+            // Password validation
+            if (password1.length < 8) {
+                errors.push("Password must be at least 8 characters.");
+                form.password1.classList.add('error');
+            }
+            if (password1 !== password2) {
+                errors.push("Passwords do not match.");
+                form.password2.classList.add('error');
+            }
+
+            // Show errors and prevent form submission
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert(errors.join("\n"));
+            }
+        });
+    </script>
+</body>
+</html>
